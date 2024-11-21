@@ -1,4 +1,3 @@
-# BLENDED_LEARNING
 # Implementation-of-Linear-Regression-for-Predicting-Car-Prices
 ## AIM:
 To write a program to predict car prices using a linear regression model and test the assumptions for linear regression.
@@ -19,18 +18,22 @@ To write a program to predict car prices using a linear regression model and tes
 9. **Output Results**: Present the predictions and evaluation metrics.
 
 ## Program:
-```
-/*
- Program to implement linear regression model for predicting car prices and test assumptions.
-Developed by: Arjun N S
-RegisterNumber: 212223230020
-*/
+
+```py
+
+#Program to implement linear regression model for predicting car prices and test assumptions.
+#Developed by: MOHAMMED SAAJID S
+#RegisterNumber: 212223240093
+
+
 # Import necessary libraries
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import seaborn as sns
 
 # Load the dataset from the URL
 data = pd.read_csv("https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-ML240EN-SkillsNetwork/labs/data/CarPrice_Assignment.csv")
@@ -45,7 +48,16 @@ data = data.dropna()  # Drop rows with missing values
 # Select features and target variable
 # Assume 'price' is the target variable and 'horsepower', 'curbweight', 'enginesize', and 'highwaympg' are features
 X = data[['horsepower', 'curbweight', 'enginesize', 'highwaympg']]
+
 y = data['price']
+
+# Standardize the features
+SS = StandardScaler()
+
+X = SS.fit_transform(X)
+y = SS.fit_transform(y.values.reshape(-1, 1))
+
+
 
 # Split the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -63,19 +75,62 @@ print("Mean Squared Error:", mean_squared_error(y_test, y_pred))
 print("R² Score:", r2_score(y_test, y_pred))
 
 # Check model assumptions
+# 1. Linearity Assumption
+plt.figure(figsize=(10, 6))
+for i, col in enumerate(['horsepower', 'curbweight', 'enginesize', 'highwaympg']):
+    plt.subplot(2, 2, i+1)
+    plt.scatter(data[col], data['price'])
+    plt.xlabel(col)
+    plt.ylabel('Price')
+    plt.title(f'Price vs {col}')
+plt.tight_layout()
+plt.show()
+
+# 2. Homoscedasticity
 plt.scatter(y_pred, y_test - y_pred)
 plt.xlabel('Predicted Prices')
 plt.ylabel('Residuals')
 plt.title('Residuals vs Predicted Prices')
 plt.axhline(0, color='red', linestyle='--')
 plt.show()
+
+# 3. Normality
+plt.figure(figsize=(10, 6))
+plt.hist(y_test - y_pred, bins=30)
+plt.xlabel('Residuals')
+plt.ylabel('Frequency')
+plt.title('Histogram of Residuals')
+plt.show()
+
+# 4. Multicollinearity
+corr_matrix = data[['horsepower', 'curbweight', 'enginesize', 'highwaympg']].corr()
+plt.figure(figsize=(8, 6))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
+plt.title('Correlation Matrix')
+plt.show()
+
+
 ```
 
 ## Output:
-<img width="803" alt="Screenshot 2024-10-06 at 8 41 08 PM" src="https://github.com/user-attachments/assets/7c99f174-3c6a-4c28-929e-e9e5f2ea84cb">
-<img width="803" alt="Screenshot 2024-10-06 at 8 41 13 PM" src="https://github.com/user-attachments/assets/bdfe064d-b1ae-43dd-a96d-553c507605ee">
 
+![alt text](image.png)
 
+1. Linearity Assumption
+
+![alt text](image-1.png)
+
+2. Homoscedasticity
+
+![alt text](image-2.png)
+
+3. Normality
+
+![alt text](image-3.png)
+
+4. Multicollinearity
+
+![alt text](image-4.png)
 
 ## Result:
 Thus, the program to implement a linear regression model for predicting car prices is written and verified using Python programming, along with the testing of key assumptions for linear regression.
